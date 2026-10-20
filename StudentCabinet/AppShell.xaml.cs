@@ -1,10 +1,12 @@
-﻿namespace StudentCabinet
+﻿using StudentCabinet.Views;
+
+namespace StudentCabinet;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        Routing.RegisterRoute("studentdetail", typeof(StudentDetailPage));
     }
 }
