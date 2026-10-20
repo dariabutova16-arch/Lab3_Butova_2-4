@@ -9,9 +9,14 @@ public class StudentViewModel : INotifyPropertyChanged
 {
     private Student _student = new Student();
 
+    public ObservableCollection<Student> Students { get; } = new();
+    public ICommand AddStudentCommand { get; }
+    public ICommand OpenDetailsCommand { get; }
+
     public StudentViewModel()
     {
         AddStudentCommand = new Command(AddStudent, CanAddStudent);
+        OpenDetailsCommand = new Command<Student>(async (student) => await OpenDetailsAsync(student));
     }
 
     public string FullName
@@ -60,9 +65,6 @@ public class StudentViewModel : INotifyPropertyChanged
     public string Greeting => $"Студент: {FullName}, група {Group}";
     public bool IsGoodScore => AverageScore >= 4.0;
 
-    public ObservableCollection<Student> Students { get; } = new();
-    public ICommand AddStudentCommand { get; }
-
     private void AddStudent()
     {
         Students.Add(new Student
@@ -71,15 +73,17 @@ public class StudentViewModel : INotifyPropertyChanged
             Group = Group,
             AverageScore = AverageScore
         });
-
         FullName = string.Empty;
         Group = string.Empty;
     }
 
     private bool CanAddStudent() => !string.IsNullOrWhiteSpace(FullName);
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    private async Task OpenDetailsAsync(Student student)
+    {
+        if (student is null) return;
 
-    protected void OnPropertyChanged(string propertyName) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-}
+        var parameters = new Dictionary<string, object>
+        {
+            { "SelectedStudent", student }
+        };
