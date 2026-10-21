@@ -5,7 +5,7 @@ using StudentCabinet.Models;
 
 namespace StudentCabinet.ViewModels;
 
-public class StudentViewModel : INotifyPropertyChanged
+public class StudentViewModel : INotifyPropertyChanged, IQueryAttributable
 {
     private Student _student = new Student();
 
@@ -88,6 +88,21 @@ public class StudentViewModel : INotifyPropertyChanged
             { "SelectedStudent", student }
         };
         await Shell.Current.GoToAsync("studentdetail", parameters);
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("UpdatedStudent", out var updatedObj) &&
+            query.TryGetValue("OriginalStudent", out var originalObj) &&
+            updatedObj is Student updated &&
+            originalObj is Student original)
+        {
+            var index = Students.IndexOf(original);
+            if (index >= 0)
+            {
+                Students[index] = updated;
+            }
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
