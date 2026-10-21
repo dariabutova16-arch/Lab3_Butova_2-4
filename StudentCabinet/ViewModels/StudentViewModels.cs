@@ -90,21 +90,6 @@ public class StudentViewModel : INotifyPropertyChanged, IQueryAttributable
         await Shell.Current.GoToAsync("studentdetail", parameters);
     }
 
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
-    {
-        if (query.TryGetValue("UpdatedStudent", out var updatedObj) &&
-            query.TryGetValue("OriginalStudent", out var originalObj) &&
-            updatedObj is Student updated &&
-            originalObj is Student original)
-        {
-            var index = Students.IndexOf(original);
-            if (index >= 0)
-            {
-                Students[index] = updated;
-            }
-        }
-    }
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void OnPropertyChanged(string propertyName) =>
