@@ -1,93 +1,69 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Input;
 using StudentCabinet.Models;
 
 namespace StudentCabinet.ViewModels;
 
-public class StudentViewModel : INotifyPropertyChanged
+public class StudentDetailViewModel : IQueryAttributable, INotifyPropertyChanged
 {
-    private Student _student = new Student();
+    private Student? _student;
+    private double _averageScore;
 
-    public ObservableCollection<Student> Students { get; } = new();
-    public ICommand AddStudentCommand { get; }
-    public ICommand OpenDetailsCommand { get; }
-
-    public StudentViewModel()
-    {
-        AddStudentCommand = new Command(AddStudent, CanAddStudent);
-        OpenDetailsCommand = new Command<Student>(async (student) => await OpenDetailsAsync(student));
-    }
-
-    public string FullName
-    {
-        get => _student.FullName;
-        set
-        {
-            if (_student.FullName != value)
-            {
-                _student.FullName = value;
-                OnPropertyChanged(nameof(FullName));
-                OnPropertyChanged(nameof(Greeting));
-                ((Command)AddStudentCommand).ChangeCanExecute();
-            }
-        }
-    }
-
-    public string Group
-    {
-        get => _student.Group;
-        set
-        {
-            if (_student.Group != value)
-            {
-                _student.Group = value;
-                OnPropertyChanged(nameof(Group));
-                OnPropertyChanged(nameof(Greeting));
-            }
-        }
-    }
+    public string FullName { get; private set; } = string.Empty;
+    public string Group { get; private set; } = string.Empty;
 
     public double AverageScore
     {
-        get => _student.AverageScore;
+        get => _averageScore;
         set
         {
-            if (_student.AverageScore != value)
+            if (_averageScore != value)
             {
-                _student.AverageScore = value;
+                _averageScore = value;
                 OnPropertyChanged(nameof(AverageScore));
-                OnPropertyChanged(nameof(IsGoodScore));
             }
         }
     }
 
-    public string Greeting => $"Студент: {FullName}, група {Group}";
-    public bool IsGoodScore => AverageScore >= 4.0;
+    public ICommand GoBackCommand { get; }
+    public ICommand SaveCommand { get; }
 
-    private void AddStudent()
+    public StudentDetailViewModel()
     {
-        Students.Add(new Student
-        {
-            FullName = FullName,
-            Group = Group,
-            AverageScore = AverageScore
-        });
-        FullName = string.Empty;
-        Group = string.Empty;
+        GoBackCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
+        SaveCommand = new Command(async () => await SaveAsync());
     }
 
-    private bool CanAddStudent() => !string.IsNullOrWhiteSpace(FullName);
-
-    private async Task OpenDetailsAsync(Student student)
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (student is null) return;
+        if (query.TryGetValue("SelectedStudent", out var value) && value is Student student)
+        {
+            _student = student;
+            FullName = student.FullName;
+            Group = student.Group;
+            AverageScore = student.AverageScore;
+            OnPropertyChanged(nameof(FullName));
+            OnPropertyChanged(nameof(Group));
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_student is null) return;
+
+        var updated = new Student
+        {
+            FullName = _student.FullName,
+            Group = _student.Group,
+            AverageScore = AverageScore
+        };
 
         var parameters = new Dictionary<string, object>
         {
-            { "SelectedStudent", student }
+            { "UpdatedStudent", updated },
+            { "OriginalStudent", _student }
         };
-        await Shell.Current.GoToAsync("studentdetail", parameters);
+        await Shell.Current.GoToAsync("..", parameters);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

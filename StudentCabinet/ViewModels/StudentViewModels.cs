@@ -87,3 +87,11 @@ public class StudentViewModel : INotifyPropertyChanged
         {
             { "SelectedStudent", student }
         };
+        await Shell.Current.GoToAsync("studentdetail", parameters);
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected void OnPropertyChanged(string propertyName) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+}
