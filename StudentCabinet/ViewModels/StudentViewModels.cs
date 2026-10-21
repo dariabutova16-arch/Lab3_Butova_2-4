@@ -62,36 +62,4 @@ public class StudentViewModel : INotifyPropertyChanged, IQueryAttributable
         }
     }
 
-    public string Greeting => $"Студент: {FullName}, група {Group}";
-    public bool IsGoodScore => AverageScore >= 4.0;
-
-    private void AddStudent()
-    {
-        Students.Add(new Student
-        {
-            FullName = FullName,
-            Group = Group,
-            AverageScore = AverageScore
-        });
-        FullName = string.Empty;
-        Group = string.Empty;
-    }
-
-    private bool CanAddStudent() => !string.IsNullOrWhiteSpace(FullName);
-
-    private async Task OpenDetailsAsync(Student student)
-    {
-        if (student is null) return;
-
-        var parameters = new Dictionary<string, object>
-        {
-            { "SelectedStudent", student }
-        };
-        await Shell.Current.GoToAsync("studentdetail", parameters);
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged(string propertyName) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-}
+    public string Greeting => $"Студент:
