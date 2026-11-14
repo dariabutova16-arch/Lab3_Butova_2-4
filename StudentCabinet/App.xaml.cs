@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using StudentCabinet.Services;
 
 namespace StudentCabinet
 {
@@ -11,7 +12,13 @@ namespace StudentCabinet
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            ThemeService.Apply();
+
+            var window = new Window(new AppShell());
+
+            window.Created += (s, e) => System.Diagnostics.Debug.WriteLine("[App] Created");
+            // ... решта рядків без змін
+            return window;
         }
     }
 }
