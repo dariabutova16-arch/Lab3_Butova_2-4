@@ -19,5 +19,8 @@ public static class ThemeService
             Preferences.Set(Key, theme == AppTheme.Dark ? "Dark" : "Light");
     }
 
-    public static bool IsDark => Preferences.Get(Key, "Light") == "Dark";
+    public static bool IsDark
+    {
+        get { return Preferences.Get(Key, "Light") == "Dark"; }
+    }
 }
