@@ -3,50 +3,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:StudentCabinet.ViewModels"
              x:Class="StudentCabinet.MainPage"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
              Title="Особистий кабінет студента">
 
-    <ContentPage.BindingContext>
-        <vm:StudentViewModel />
-    </ContentPage.BindingContext>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
 
-    <VerticalStackLayout Padding="20" Spacing="12">
+            <Button Text="Налаштування" Clicked="OnSettingsClicked" HorizontalOptions="End" />
 
-        <Entry Text="{Binding FullName, Mode=TwoWay}" Placeholder="ПІБ студента" />
-        <Entry Text="{Binding Group, Mode=TwoWay}" Placeholder="Група" />
+            <Entry Text="{Binding FullName, Mode=TwoWay}" Placeholder="ПІБ студента"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+            <Entry Text="{Binding Group, Mode=TwoWay}" Placeholder="Група"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
-        <Label Text="{Binding AverageScore, StringFormat='Середній бал: {0:F1}'}" />
-        <Slider Minimum="0" Maximum="5"
-                Value="{Binding AverageScore, Mode=TwoWay}" />
+            <Label Text="{Binding AverageScore, StringFormat='Середній бал: {0:F1}'}"
+                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+            <Slider Minimum="0" Maximum="5"
+                    Value="{Binding AverageScore, Mode=TwoWay}" />
 
-        <Label Text="{Binding Greeting, Mode=OneWay}"
-               FontSize="18" TextColor="Gray">
-            <Label.Triggers>
-                <DataTrigger TargetType="Label"
-                             Binding="{Binding IsGoodScore}" Value="True">
-                    <Setter Property="TextColor" Value="Green" />
-                </DataTrigger>
-            </Label.Triggers>
-        </Label>
+            <Label Text="{Binding Greeting, Mode=OneWay}" FontSize="18"
+                   TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label"
+                                 Binding="{Binding IsGoodScore}" Value="True">
+                        <Setter Property="TextColor" Value="Green" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
 
-        <Button Text="Додати студента"
-                Command="{Binding AddStudentCommand}" />
+            <Button Text="Додати студента"
+                    Command="{Binding AddStudentCommand}" />
 
-        <CollectionView ItemsSource="{Binding Students}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <VerticalStackLayout Padding="0,6">
-                        <Label Text="{Binding FullName}" FontAttributes="Bold" />
-                        <Label Text="{Binding Group, StringFormat='Група: {0}'}" />
-                        <Label Text="{Binding AverageScore, StringFormat='Бал: {0:F1}'}" />
+            <CollectionView ItemsSource="{Binding Students}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Padding="0,6">
+                            <Label Text="{Binding FullName}" FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                            <Label Text="{Binding Group, StringFormat='Група: {0}'}"
+                                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                            <Label Text="{Binding AverageScore, StringFormat='Бал: {0:F1}'}"
+                                   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                            <HorizontalStackLayout Spacing="8">
+                                <Button Text="Детальніше"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:StudentViewModel}}, Path=OpenDetailsCommand}"
+                                        CommandParameter="{Binding .}" />
+                                <Button Text="Видалити" BackgroundColor="Firebrick"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:StudentViewModel}}, Path=DeleteStudentCommand}"
+                                        CommandParameter="{Binding .}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-                        <Button Text="Детальніше"
-                                HorizontalOptions="Start"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:StudentViewModel}}, Path=OpenDetailsCommand}"
-                                CommandParameter="{Binding .}" />
-                    </VerticalStackLayout>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
